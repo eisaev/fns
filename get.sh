@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# Phone number
-PHONE="+79876543210"
-# Password from SMS
-PASS="123123"
+
+# Внимание! Данные для авторизации перенесены в отдельный файл. Переименуйте файл netrc.sample в netrc и укажите в нём реальные телефон и код, полученный по СМС.
+
 # Random device ID
 DEVID=`uuidgen | tr -d '-'`
 # DeviceID
@@ -28,15 +27,15 @@ then
     # Fiscal sign (Подпись фискального документа - ФП)
     FS="${3}"
 
-    RESULT=` curl -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" -u "${PHONE}:${PASS}" "${BASE}/v1/inns/*/kkts/*/fss/${FN}/tickets/${FD}" -d "fiscalSign=${FS}" -d "sendToEmail=no"`
+    RESULT=` curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}/v1/inns/*/kkts/*/fss/${FN}/tickets/${FD}" -d "fiscalSign=${FS}" -d "sendToEmail=no"`
 
     DT=`echo "${RESULT}" | jq -r ".document.receipt.dateTime"`
     echo "${RESULT}" | jq "." > "${DT}_${FS}.json"
 else
-    RESULT=`curl -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" -u "${PHONE}:${PASS}" "${BASE}/v1/extract" -d "sendToEmail=0" -d "fileType=json"`
+    RESULT=`curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}/v1/extract" -d "sendToEmail=0" -d "fileType=json"`
 
     URL=`echo "${RESULT}" | jq -r ".url"`
-    RESULT=`curl -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" -u "${PHONE}:${PASS}" "${BASE}${URL}"`
+    RESULT=`curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}${URL}"`
 
     DT=`date -Iseconds`
     echo "${RESULT}" | jq "." > "all_${DT}.json"
