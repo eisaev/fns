@@ -15,7 +15,7 @@ CLIENT="1.4.1.3"
 # User agent
 UAGENT="okhttp/3.0.1"
 # Base URL
-BASE="http://proverkacheka.nalog.ru:8888"
+BASE="https://proverkacheka.nalog.ru:9999"
 
 
 if [ ! -z "${1}" ] && [ ! -z "${2}" ] && [ ! -z "${3}" ]
