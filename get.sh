@@ -35,8 +35,6 @@ else
     RESULT=`curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}/v1/extract" -d "sendToEmail=0" -d "fileType=json"`
 
     URL=`echo "${RESULT}" | jq -r ".url"`
-    RESULT=`curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}${URL}"`
-
     DT=`date -Iseconds`
-    echo "${RESULT}" | jq "." > "all_${DT}.json"
+    curl --netrc-file ./netrc -s -G -X GET -H "Device-Id: ${DEVID}" -H "Device-OS: ${DEVOS}" -H "Version: ${PROTO}" -H "ClientVersion: ${CLIENT}" -A "${UAGENT}" "${BASE}${URL}" | jq "." > "all_${DT}.json"
 fi
